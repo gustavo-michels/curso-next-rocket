@@ -1,5 +1,7 @@
 import { GetServerSideProps } from 'next';
-import { Title } from '../styles/pages/Home';
+import { Title } from '@/styles/pages/Home';
+import SEO from '@/components/SEO';
+
 
 interface IProduct {
   id: string;
@@ -11,9 +13,15 @@ interface HomeProps {
 }
 
 export default function Home( { recommendedProducts }: HomeProps ) {
+  async function handleSum() {
+    const math = (await import('../lib/math')).default; // Importação dinâmica.
+
+    alert(math.sum(5, 3));
+  }
 
   return (
     <div>
+      <SEO title="DevCommerce, o seu e-commerce de tecnologia" shouldExcludeTitleSuffix />
       <section>
         <Title>Produtos</Title>
 
@@ -26,13 +34,15 @@ export default function Home( { recommendedProducts }: HomeProps ) {
             )
           })}
         </ul>
+
+        <button onClick={handleSum}>Somar!</button>
       </section>
     </div>
   )
 }
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-  const response = await fetch('http://localhost:3333/recommended');
+  const response = await fetch(`http://localhost:3333/recommended`);
   const recommendedProducts = await response.json();
 
   return {
